@@ -10,11 +10,6 @@
     "paths": {
         "/workspaces": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Returns workspaces owned by the authenticated user",
                 "produces": [
                     "application/json"
@@ -23,6 +18,15 @@
                     "workspaces"
                 ],
                 "summary": "List current user's workspaces",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -54,11 +58,6 @@
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Create a new workspace for the current user",
                 "consumes": [
                     "application/json"
@@ -71,6 +70,13 @@
                 ],
                 "summary": "Create a workspace",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Workspace",
                         "name": "body",
@@ -120,11 +126,6 @@
         },
         "/workspaces/{id}/devices/token": {
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Create a short-lived registration token for provisioning a device",
                 "consumes": [
                     "application/json"
@@ -137,6 +138,13 @@
                 ],
                 "summary": "Generate device registration token",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "format": "uuid",

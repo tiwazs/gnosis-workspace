@@ -24,6 +24,14 @@ func (service *WorkspaceService) CreateWorkspace(name string, ownerID string) (*
 		OwnerID: ownerID,
 	}
 
+	var role struct {
+		ID uuid.UUID
+	}
+
+	if err := service.db.Table("roles").Where("name = ?", "Owner").Select("id").First(&role).Error; err != nil {
+		return nil, err
+	}
+
 	if err := service.db.Create(workspace).Error; err != nil {
 		return nil, err
 	}
@@ -32,7 +40,7 @@ func (service *WorkspaceService) CreateWorkspace(name string, ownerID string) (*
 		ID:          uuid.New(),
 		WorkspaceID: workspace.ID,
 		UserID:      ownerID,
-		Role:        "OWNER",
+    	RoleID:      role.ID,
 	}).Error; err != nil {
 		return nil, err
 	}
@@ -49,7 +57,7 @@ func (service *WorkspaceService) GetWorkspace(workspaceID uuid.UUID) (*models.Wo
 	return &workspace, nil
 }
 
-func (service *WorkspaceService) GetAllWorkspaces(ownerID string) ([]models.Workspace, error) {
+func (service *WorkspaceService) GetWorkspacesByUserId(ownerID string) ([]models.Workspace, error) {
 	var workspaces []models.Workspace
 	if err := service.db.Where("owner_id = ?", ownerID).Find(&workspaces).Error; err != nil {
 		return nil, err

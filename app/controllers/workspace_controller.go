@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tiwazs/gnosis-workspace/app/middleware"
 	"github.com/tiwazs/gnosis-workspace/app/services"
 	"gorm.io/gorm"
 )
@@ -22,7 +21,7 @@ func RegisterRoutes(router *gin.Engine, db *gorm.DB) {
 	workspaceController := &WorkspaceController{service: workspaceService}
 
 	api := router.Group("/api")
-	api.Use(middleware.Auth())
+	//api.Use(middleware.Auth())
 	{
 		api.POST("/workspaces", workspaceController.CreateWorkspace)
 		api.GET("/workspaces", workspaceController.GetWorkspaces)
@@ -37,7 +36,7 @@ func RegisterRoutes(router *gin.Engine, db *gorm.DB) {
 // @Tags         workspaces
 // @Accept       json
 // @Produce      json
-// @Security     BearerAuth
+// @Param        X-User-ID header string true "User ID"
 // @Param        body  body  CreateWorkspaceRequest  true  "Workspace"
 // @Success      201   {object}  models.Workspace
 // @Failure      400   {object}  map[string]string
@@ -46,12 +45,13 @@ func RegisterRoutes(router *gin.Engine, db *gorm.DB) {
 // @Router       /workspaces [post]
 func (controller *WorkspaceController) CreateWorkspace(context *gin.Context) {
 	var body CreateWorkspaceRequest
+
+
+	userID := context.GetHeader("X-User-ID")
 	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	userID := context.GetString("user_id")
 
 	workspace, err := controller.service.CreateWorkspace(body.Name, userID)
 	if err != nil {
@@ -67,15 +67,15 @@ func (controller *WorkspaceController) CreateWorkspace(context *gin.Context) {
 // @Description  Returns workspaces owned by the authenticated user
 // @Tags         workspaces
 // @Produce      json
-// @Security     BearerAuth
+// @Param        X-User-ID header string true "User ID"
 // @Success      200  {array}   models.Workspace
 // @Failure      401  {object}  map[string]string
 // @Failure      500  {object}  map[string]string
 // @Router       /workspaces [get]
 func (controller *WorkspaceController) GetWorkspaces(context *gin.Context) {
-	userID := context.GetString("user_id")
+	userID := context.GetHeader("X-User-ID")
 
-	workspaces, err := controller.service.GetAllWorkspaces(userID)
+	workspaces, err := controller.service.GetWorkspacesByUserId(userID)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "could not list workspaces"})
 		return
@@ -90,7 +90,7 @@ func (controller *WorkspaceController) GetWorkspaces(context *gin.Context) {
 // @Tags         devices
 // @Accept       json
 // @Produce      json
-// @Security     BearerAuth
+// @Param        X-User-ID header string true "User ID"
 // @Param        id   path      string  true  "Workspace ID" Format(uuid)
 // @Success      201  {object}  models.RegistrationToken
 // @Failure      401  {object}  map[string]string

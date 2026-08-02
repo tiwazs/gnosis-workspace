@@ -48,6 +48,12 @@ paths:
   /workspaces:
     get:
       description: Returns workspaces owned by the authenticated user
+      parameters:
+      - description: User ID
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -69,8 +75,6 @@ paths:
             additionalProperties:
               type: string
             type: object
-      security:
-      - BearerAuth: []
       summary: List current user's workspaces
       tags:
       - workspaces
@@ -79,6 +83,11 @@ paths:
       - application/json
       description: Create a new workspace for the current user
       parameters:
+      - description: User ID
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
       - description: Workspace
         in: body
         name: body
@@ -110,8 +119,6 @@ paths:
             additionalProperties:
               type: string
             type: object
-      security:
-      - BearerAuth: []
       summary: Create a workspace
       tags:
       - workspaces
@@ -121,6 +128,11 @@ paths:
       - application/json
       description: Create a short-lived registration token for provisioning a device
       parameters:
+      - description: User ID
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
       - description: Workspace ID
         format: uuid
         in: path
@@ -146,8 +158,6 @@ paths:
             additionalProperties:
               type: string
             type: object
-      security:
-      - BearerAuth: []
       summary: Generate device registration token
       tags:
       - devices

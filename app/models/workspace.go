@@ -19,7 +19,7 @@ type WorkspaceMember struct {
 	ID          uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	WorkspaceID uuid.UUID `gorm:"type:uuid;not null" json:"workspace_id"`
 	UserID      string    `gorm:"type:text;not null" json:"user_id"`
-	Role        string    `gorm:"not null;default:'VIEWER'" json:"role"` // OWNER | EDITOR | VIEWER
+    RoleID      uuid.UUID `gorm:"type:uuid;not null" json:"role_id"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
