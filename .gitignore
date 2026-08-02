@@ -1,0 +1,42 @@
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/gnosis-workspace
+/main
+
+# Go build / coverage
+bin/
+dist/
+build/
+vendor/
+coverage.*
+*.coverprofile
+profile.cov
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug / temp
+tmp/
+temp/
+*.log
+debug
+__debug_bin*
