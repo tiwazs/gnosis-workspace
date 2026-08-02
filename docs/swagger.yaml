@@ -1,0 +1,160 @@
+basePath: /api
+definitions:
+  controllers.CreateWorkspaceRequest:
+    properties:
+      name:
+        example: My Lab
+        type: string
+    required:
+    - name
+    type: object
+  models.RegistrationToken:
+    properties:
+      created_by:
+        type: string
+      expires_at:
+        type: string
+      token:
+        type: string
+      used:
+        type: boolean
+      used_at:
+        type: string
+      used_by_device:
+        type: string
+      workspace_id:
+        type: string
+    type: object
+  models.Workspace:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      owner_id:
+        description: OwnerID is the main-service user id (cuid), not a UUID.
+        type: string
+      updated_at:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Workspace service API
+  title: Gnosis Workspace API
+  version: "1.0"
+paths:
+  /workspaces:
+    get:
+      description: Returns workspaces owned by the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Workspace'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List current user's workspaces
+      tags:
+      - workspaces
+    post:
+      consumes:
+      - application/json
+      description: Create a new workspace for the current user
+      parameters:
+      - description: Workspace
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateWorkspaceRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Workspace'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a workspace
+      tags:
+      - workspaces
+  /workspaces/{id}/devices/token:
+    post:
+      consumes:
+      - application/json
+      description: Create a short-lived registration token for provisioning a device
+      parameters:
+      - description: Workspace ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.RegistrationToken'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Generate device registration token
+      tags:
+      - devices
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and the JWT from main-service login.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
