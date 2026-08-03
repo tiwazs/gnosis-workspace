@@ -10,13 +10,18 @@ package main
 
 import (
 	"log"
-
+	"net"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	"google.golang.org/grpc"
 	"github.com/tiwazs/gnosis-workspace/app/controllers"
 	"github.com/tiwazs/gnosis-workspace/app/database"
+	appgrpc "github.com/tiwazs/gnosis-workspace/app/grpc" // your RegistrationServer
+	workspacev1 "github.com/tiwazs/gnosis-workspace/app/grpc/workspace/v1"
+	"github.com/tiwazs/gnosis-workspace/app/services"
 	_ "github.com/tiwazs/gnosis-workspace/docs"
 )
 
@@ -32,6 +37,19 @@ func main() {
 	controllers.RegisterRoutes(router, db)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	workspaceService := services.NewWorkspaceService(db)
+
+	// Start gRPC server
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	workspacev1.RegisterRegistrationServiceServer(grpcServer, &appgrpc.RegistrationServer{
+		Service: workspaceService,
+	})
+	go grpcServer.Serve(lis)
 
 	router.Run(":8000")
 }

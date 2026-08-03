@@ -2,6 +2,7 @@ package services
 
 import (
 	"crypto/rand"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -86,6 +87,32 @@ func (service *WorkspaceService) GenerateRegistrationToken(workspaceID, userID s
 	}
 	return record, nil
 }
+
+// =============================== gRPC methods ===============================
+
+func (service *WorkspaceService) RedeemToken(token string) (*models.RegistrationToken, error) {
+	var record models.RegistrationToken
+	if err := service.db.Where("token = ?", token).First(&record).Error; err != nil {
+		return nil, err
+	}
+
+	if record.Used {
+		return nil, errors.New("token already used")
+	}
+
+	if record.ExpiresAt.Before(time.Now().UTC()) {
+		return nil, errors.New("token expired")
+	}
+
+	record.Used = true
+	if err := service.db.Save(&record).Error; err != nil {
+		return nil, err
+	}
+
+	return &record, nil
+}
+
+// =============================== Helper functions ===============================
 
 func generateCode() string {
 	alphabet := []rune("ABCDEFGHJKLMNPQRSTUVWXYZ23456789")
