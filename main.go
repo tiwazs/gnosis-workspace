@@ -10,6 +10,8 @@ package main
 
 import (
 	"log"
+	"fmt"
+	"os"
 	"net"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -41,7 +43,7 @@ func main() {
 	workspaceService := services.NewWorkspaceService(db)
 
 	// Start gRPC server
-	lis, err := net.Listen("tcp", ":50051")
+	listening_address, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("GRPC_PORT")))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -49,7 +51,7 @@ func main() {
 	workspacev1.RegisterRegistrationServiceServer(grpcServer, &appgrpc.RegistrationServer{
 		Service: workspaceService,
 	})
-	go grpcServer.Serve(lis)
+	go grpcServer.Serve(listening_address)
 
-	router.Run(":8000")
+	router.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
