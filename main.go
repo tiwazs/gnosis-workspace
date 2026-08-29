@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"os"
 	"net"
+	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
@@ -38,7 +39,12 @@ func main() {
 	router := gin.Default()
 	controllers.RegisterRoutes(router, db)
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	url := ginSwagger.URL("/workspace/docs/doc.json")
+
+	router.GET("/workspace/docs", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/workspace/docs/index.html")
+	})
+	router.GET("/workspace/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	workspaceService := services.NewWorkspaceService(db)
 
