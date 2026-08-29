@@ -20,7 +20,7 @@ func RegisterRoutes(router *gin.Engine, db *gorm.DB) {
 	workspaceService := services.NewWorkspaceService(db)
 	workspaceController := &WorkspaceController{service: workspaceService}
 
-	api := router.Group("/api")
+	api := router.Group("/workspace")
 	//api.Use(middleware.Auth())
 	{
 		api.POST("/workspaces", workspaceController.CreateWorkspace)
