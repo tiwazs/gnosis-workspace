@@ -1,0 +1,35 @@
+.git
+.gitmodules
+.github
+
+# secrets — never send to the daemon
+.env
+.env.*
+!.env.example
+
+# not needed to compile (generated pb.go is already under app/)
+third_party
+
+# local / editor
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# build artifacts
+*.exe
+*.test
+*.out
+/gnosis-workspace
+/main
+bin
+dist
+build
+vendor
+coverage.*
+*.coverprofile
+tmp
+temp
+*.log
+__debug_bin*
