@@ -40,3 +40,5 @@ temp/
 *.log
 debug
 __debug_bin*
+
+deployment/k8s_patched.yaml
