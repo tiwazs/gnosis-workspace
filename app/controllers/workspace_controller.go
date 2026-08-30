@@ -36,12 +36,12 @@ func RegisterRoutes(router *gin.Engine, db *gorm.DB) {
 // @Tags         workspaces
 // @Accept       json
 // @Produce      json
-// @Param        X-User-ID header string true "User ID"
 // @Param        body  body  CreateWorkspaceRequest  true  "Workspace"
 // @Success      201   {object}  models.Workspace
 // @Failure      400   {object}  map[string]string
 // @Failure      401   {object}  map[string]string
 // @Failure      500   {object}  map[string]string
+// @Security     BearerAuth
 // @Router       /workspaces [post]
 func (controller *WorkspaceController) CreateWorkspace(context *gin.Context) {
 	var body CreateWorkspaceRequest
@@ -67,10 +67,10 @@ func (controller *WorkspaceController) CreateWorkspace(context *gin.Context) {
 // @Description  Returns workspaces owned by the authenticated user
 // @Tags         workspaces
 // @Produce      json
-// @Param        X-User-ID header string true "User ID"
 // @Success      200  {array}   models.Workspace
 // @Failure      401  {object}  map[string]string
 // @Failure      500  {object}  map[string]string
+// @Security     BearerAuth
 // @Router       /workspaces [get]
 func (controller *WorkspaceController) GetWorkspaces(context *gin.Context) {
 	userID := context.GetHeader("X-User-ID")
@@ -90,11 +90,11 @@ func (controller *WorkspaceController) GetWorkspaces(context *gin.Context) {
 // @Tags         devices
 // @Accept       json
 // @Produce      json
-// @Param        X-User-ID header string true "User ID"
 // @Param        id   path      string  true  "Workspace ID" Format(uuid)
 // @Success      201  {object}  models.RegistrationToken
 // @Failure      401  {object}  map[string]string
 // @Failure      500  {object}  map[string]string
+// @Security     BearerAuth
 // @Router       /workspaces/{id}/devices/token [post]
 func (controller *WorkspaceController) GenerateToken(context *gin.Context) {
 	workspaceID := context.Param("id")

@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /workspace
 definitions:
   controllers.CreateWorkspaceRequest:
     properties:
@@ -48,12 +48,6 @@ paths:
   /workspaces:
     get:
       description: Returns workspaces owned by the authenticated user
-      parameters:
-      - description: User ID
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -75,6 +69,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: List current user's workspaces
       tags:
       - workspaces
@@ -83,11 +79,6 @@ paths:
       - application/json
       description: Create a new workspace for the current user
       parameters:
-      - description: User ID
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
       - description: Workspace
         in: body
         name: body
@@ -119,6 +110,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Create a workspace
       tags:
       - workspaces
@@ -128,11 +121,6 @@ paths:
       - application/json
       description: Create a short-lived registration token for provisioning a device
       parameters:
-      - description: User ID
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
       - description: Workspace ID
         format: uuid
         in: path
@@ -158,12 +146,15 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Generate device registration token
       tags:
       - devices
 securityDefinitions:
   BearerAuth:
-    description: Type "Bearer" followed by a space and the JWT from main-service login.
+    description: Paste "Bearer " followed by the JWT from main-service login (or an
+      API key).
     in: header
     name: Authorization
     type: apiKey

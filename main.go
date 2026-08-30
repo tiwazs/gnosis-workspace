@@ -1,11 +1,11 @@
 // @title           Gnosis Workspace API
 // @version         1.0
 // @description     Workspace service API
-// @BasePath        /api
+// @BasePath        /workspace
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-// @description     Type "Bearer" followed by a space and the JWT from main-service login.
+// @description     Paste "Bearer " followed by the JWT from main-service login (or an API key).
 package main
 
 import (
@@ -44,7 +44,11 @@ func main() {
 	router.GET("/workspace/docs", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/workspace/docs/index.html")
 	})
-	router.GET("/workspace/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	router.GET("/workspace/docs/*any", ginSwagger.WrapHandler(
+		swaggerFiles.Handler,
+		url,
+		ginSwagger.PersistAuthorization(true),
+	))
 
 	workspaceService := services.NewWorkspaceService(db)
 

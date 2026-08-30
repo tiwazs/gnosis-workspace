@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/workspaces": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Returns workspaces owned by the authenticated user",
                 "produces": [
                     "application/json"
@@ -25,15 +30,6 @@ const docTemplate = `{
                     "workspaces"
                 ],
                 "summary": "List current user's workspaces",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -65,6 +61,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new workspace for the current user",
                 "consumes": [
                     "application/json"
@@ -77,13 +78,6 @@ const docTemplate = `{
                 ],
                 "summary": "Create a workspace",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "Workspace",
                         "name": "body",
@@ -133,6 +127,11 @@ const docTemplate = `{
         },
         "/workspaces/{id}/devices/token": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a short-lived registration token for provisioning a device",
                 "consumes": [
                     "application/json"
@@ -145,13 +144,6 @@ const docTemplate = `{
                 ],
                 "summary": "Generate device registration token",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "format": "uuid",
@@ -253,7 +245,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "BearerAuth": {
-            "description": "Type \"Bearer\" followed by a space and the JWT from main-service login.",
+            "description": "Paste \"Bearer \" followed by the JWT from main-service login (or an API key).",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
@@ -265,13 +257,14 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/api",
+	BasePath:         "/workspace",
 	Schemes:          []string{},
 	Title:            "Gnosis Workspace API",
 	Description:      "Workspace service API",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {
