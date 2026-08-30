@@ -1,0 +1,86 @@
+---
+# ------------------------------------#
+# ConfigMap                           #
+# ------------------------------------#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${K8S_SERVICE_NAME}
+  namespace: ${K8S_NAMESPACE}
+data:
+  DB_HOST: ${DB_HOST}
+  DB_USER: ${DB_USER}
+  DB_NAME: ${DB_NAME}
+  DB_PORT: "${DB_PORT}"
+  PORT: "${PORT}"
+  GRPC_PORT: "${GRPC_PORT}"
+
+---
+# ------------------------------------#
+# Deployment                          #
+# ------------------------------------#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${K8S_SERVICE_NAME}
+  namespace: ${K8S_NAMESPACE}
+  labels:
+    app: ${K8S_SERVICE_NAME}
+spec:
+  replicas: ${K8S_MIN_REPLICAS}
+  selector:
+    matchLabels:
+      app: ${K8S_SERVICE_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${K8S_SERVICE_NAME}
+    spec:
+      containers:
+      - name: ${K8S_SERVICE_NAME}
+        image: ${IMAGE_NAME}:${IMAGE_TAG}
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: ${K8S_SERVICE_NAME}
+          - secretRef:
+              name: ${K8S_SERVICE_NAME}-secret
+        resources:
+          requests:
+            cpu: ${K8S_RESOURCES_REQUESTS_CPU}
+            memory: ${K8S_RESOURCES_REQUESTS_MEMORY}
+          limits:
+            cpu: ${K8S_RESOURCES_LIMITS_CPU}
+            memory: ${K8S_RESOURCES_LIMITS_MEMORY}
+        ports:
+          - name: http
+            containerPort: ${PORT}
+          - name: grpc
+            containerPort: ${GRPC_PORT}
+      imagePullSecrets:
+        - name: dockerhub-regcred
+
+---
+# ------------------------------------#
+# Service                             #
+# ------------------------------------#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${K8S_SERVICE_NAME}
+  labels:
+    app: ${K8S_SERVICE_NAME}
+  namespace: ${K8S_NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    app: ${K8S_SERVICE_NAME}
+  ports:
+    - name: http
+      port: ${PORT}
+      targetPort: ${PORT}
+      protocol: TCP
+    - name: grpc
+      port: ${GRPC_PORT}
+      targetPort: ${GRPC_PORT}
+      protocol: TCP
