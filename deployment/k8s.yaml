@@ -17,6 +17,20 @@ data:
 
 ---
 # ------------------------------------#
+# Secret                              #
+# ------------------------------------#
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${K8S_SERVICE_NAME}-secret
+  namespace: ${K8S_NAMESPACE}
+type: Opaque
+stringData:
+  DB_PASSWORD: ${DB_PASSWORD}
+  TOKEN_KEY: ${TOKEN_KEY}
+
+---
+# ------------------------------------#
 # Deployment                          #
 # ------------------------------------#
 apiVersion: apps/v1
